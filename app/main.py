@@ -1,95 +1,209 @@
-import streamlit as st
-import pandas as st_pandas
-import plotly.graph_objects as go
-import io
+"""Entrada Streamlit: no contiene ecuaciones estructurales ni un núcleo JS."""
+from pathlib import Path
 import sys
-import os
 
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-from src.models.inputs import BeamInput
-from src.sections.rectangular import calculate_rectangular_properties
-from src.analysis.elastic import uniform_load_effects, calculate_elastic_stresses, generate_beam_diagram
+ROOT = Path(__file__).resolve().parents[1]
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
 
-st.set_page_config(page_title="PRE-POST | Viga Pretensada", layout="wide")
-st.title("PRE-POST | Viga pretensada")
-st.info("Uso académico: herramienta en desarrollo. Versión local estructurada.")
+import pandas as pd
+import streamlit as st
+from src.models.project import ProjectInput, DEFAULT_INPUT
+from src.sections.composite import template, component_properties, tendon_eccentricity, append_component
+from src.analysis.pipeline import analyze, selected_coordinates, fiber_at
+from src.reporting.tables import INPUT_FIELDS, CONVENTIONS, report_tables
+from src.reporting.exports import excel_bytes, pdf_bytes, json_bytes
+from src.units import Quantity as Q, display_unit, from_si, to_si
+from app.plots import beam_plots, profile_plot, section_plot, LABELS
 
-system = st.radio("Sistema de unidades", ["SI", "USCS"], horizontal=True)
-fact_l = 1.0 if system == "SI" else 3.28084 
 
-col1, col2, col3 = st.columns(3)
-with col1:
-    span = st.number_input(f"Luz [{'m' if system=='SI' else 'ft'}]", value=10.0 * fact_l) / fact_l
-    width = st.number_input(f"Ancho b [{'m' if system=='SI' else 'ft'}]", value=0.4 * fact_l) / fact_l
-    height = st.number_input(f"Alto h [{'m' if system=='SI' else 'ft'}]", value=0.8 * fact_l) / fact_l
-with col2:
-    w_weight = st.number_input("Peso específico [N/m³]", value=25000.0)
-    live_load = st.number_input("Carga viva [N/m]", value=5000.0)
-    fci = st.number_input("f'ci [Pa]", value=35000000.0)
-    fc = st.number_input("f'c [Pa]", value=45000000.0)
-with col3:
-    force = st.number_input("Fuerza inicial Pi [N]", value=1000000.0)
-    ecc = st.number_input(f"Excentricidad e [{'m' if system=='SI' else 'ft'}]", value=-0.2 * fact_l) / fact_l
-    area_s = st.number_input("Área de acero Ap [m²]", value=0.0007, format="%.5f")
-    loss = st.number_input("Pérdida [%]", value=15.0)
+def invalidate():
+    st.session_state.pop('result', None)
 
-if st.button("Calcular etapas"):
+
+def initialize():
+    ss = st.session_state
+    if 'units_previous' not in ss:
+        ss['units_previous'] = ss['unit_system'] = 'SI'
+        ss['editor_revision'] = 0
+        ss['components_si'] = []
+        ss['editor_base_si'] = None
+        for field, _, q in INPUT_FIELDS:
+            ss[field] = from_si(DEFAULT_INPUT[field],q,'SI')
+        ss['loss_percent'] = DEFAULT_INPUT['loss_ratio']*100
+
+
+def change_units():
+    ss = st.session_state
+    old, new = ss['units_previous'], ss['unit_system']
+    for field, _, q in INPUT_FIELDS:
+        ss[field] = from_si(to_si(ss[field],q,old),q,new)
+    ss['units_previous'] = new
+    ss['editor_revision'] += 1
+    if ss['editor_base_si'] is not None:
+        ss['editor_base_si'] = ss['components_si']
+
+
+def apply_template():
+    ss = st.session_state
+    invalidate()
     try:
-        beam = BeamInput(span_m=span, width_m=width, height_m=height, unit_weight_n_m3=w_weight, fci_pa=fci, fc_pa=fc, live_load_n_m=live_load, initial_force_n=force, eccentricity_m=ecc, steel_area_m2=area_s, loss_ratio=loss/100)
-        props = calculate_rectangular_properties(beam)
-        
-        trans_eff = uniform_load_effects(props.self_weight_n_m, beam.span_m)
-        trans_stress = calculate_elastic_stresses(props, beam.initial_force_n, beam.eccentricity_m, trans_eff.midspan_moment_n_m)
-        
-        eff_force = beam.initial_force_n * (1 - beam.loss_ratio)
-        serv_eff = uniform_load_effects(props.self_weight_n_m + beam.live_load_n_m, beam.span_m)
-        serv_stress = calculate_elastic_stresses(props, eff_force, beam.eccentricity_m, serv_eff.midspan_moment_n_m)
+        b = to_si(ss['width_m'],Q.SECTION_LENGTH,ss['unit_system'])
+        h = to_si(ss['height_m'],Q.SECTION_LENGTH,ss['unit_system'])
+        parts = template(ss['shape'],b,h)
+        sec = component_properties(parts, to_si(ss['unit_weight_n_m3'],Q.UNIT_WEIGHT,ss['unit_system']))
+        ss['components_si'] = [p.model_dump() for p in parts]
+        ss['editor_base_si'] = ss['components_si']
+        ss['eccentricity_m'] = from_si(tendon_eccentricity(sec),Q.SECTION_LENGTH,ss['unit_system'])
+        ss['editor_revision'] += 1
+    except (ValueError,OverflowError,ZeroDivisionError) as exc:
+        ss['template_error'] = str(exc)
 
-        tab1, tab2, tab3 = st.tabs(["Métricas", "Gráficos", "Exportar Informe"])
-        
-        with tab1:
-            st.subheader("Resultados - Transferencia")
-            mc1, mc2, mc3 = st.columns(3)
-            mc1.metric("Área Bruta", f"{props.area_m2:.3f} m²")
-            mc2.metric("Momento Centro", f"{trans_eff.midspan_moment_n_m:,.0f} N·m")
-            mc3.metric("Tensión Inf.", f"{trans_stress.bottom_pa:,.0f} Pa")
-            
-            st.subheader("Resultados - Servicio")
-            mc4, mc5, mc6 = st.columns(3)
-            mc4.metric("Fuerza Efectiva", f"{eff_force:,.0f} N")
-            mc5.metric("Momento Centro", f"{serv_eff.midspan_moment_n_m:,.0f} N·m")
-            mc6.metric("Tensión Inf.", f"{serv_stress.bottom_pa:,.0f} Pa")
 
-        with tab2:
-            st.markdown("### Diagramas Comparativos")
-            trans_diag = generate_beam_diagram(props.self_weight_n_m, beam.span_m)
-            serv_diag = generate_beam_diagram(props.self_weight_n_m + beam.live_load_n_m, beam.span_m)
-            
-            x_vals = [d["x"] for d in trans_diag]
-            
-            fig_shear = go.Figure()
-            fig_shear.add_trace(go.Scatter(x=x_vals, y=[d["shear"] for d in trans_diag], name="Transferencia", line=dict(color='#2563eb')))
-            fig_shear.add_trace(go.Scatter(x=x_vals, y=[d["shear"] for d in serv_diag], name="Servicio", line=dict(color='#f59e0b')))
-            fig_shear.update_layout(title="Corte V(x)")
-            st.plotly_chart(fig_shear, use_container_width=True)
+def read_input(system, components):
+    data = {field:to_si(st.session_state[field],q,system) for field,_,q in INPUT_FIELDS}
+    return ProjectInput(**data,loss_ratio=st.session_state['loss_percent']/100,
+        project=st.session_state['project'],author=st.session_state['author'],components=components)
 
-            fig_mom = go.Figure()
-            fig_mom.add_trace(go.Scatter(x=x_vals, y=[d["moment"] for d in trans_diag], name="Transferencia", line=dict(color='#2563eb')))
-            fig_mom.add_trace(go.Scatter(x=x_vals, y=[d["moment"] for d in serv_diag], name="Servicio", line=dict(color='#f59e0b')))
-            fig_mom.update_layout(title="Momento M(x)")
-            st.plotly_chart(fig_mom, use_container_width=True)
 
-        with tab3:
-            df = st_pandas.DataFrame({
-                "Propiedad": ["Luz (m)", "Área (m2)", "Inercia (m4)", "P. Propio (N/m)", "Fuerza Efectiva (N)"],
-                "Valor": [beam.span_m, props.area_m2, props.inertia_m4, props.self_weight_n_m, eff_force]
-            })
-            st.dataframe(df, hide_index=True)
-            
-            buffer = io.BytesIO()
-            with st_pandas.ExcelWriter(buffer, engine='xlsxwriter') as writer:
-                df.to_excel(writer, index=False, sheet_name='Reporte PRE-POST')
-            st.download_button(label="Descargar Reporte Excel", data=buffer.getvalue(), file_name="Reporte_PRE_POST.xlsx", mime="application/vnd.ms-excel")
+def add_component(kind):
+    ss = st.session_state
+    invalidate()
+    try:
+        parts = append_component(ss['components_si'],kind,
+            to_si(ss['unit_weight_n_m3'],Q.UNIT_WEIGHT,ss['unit_system']))
+        ss['components_si'] = ss['editor_base_si'] = [p.model_dump() for p in parts]
+        ss['editor_revision'] += 1
+    except (ValueError,OverflowError,ZeroDivisionError) as exc:
+        ss['template_error'] = str(exc)
 
-    except Exception as e:
-        st.error(f"Error en validación o cálculo: {e}")
+
+def reset_values():
+    ss = st.session_state
+    invalidate()
+    for field,_,q in INPUT_FIELDS:
+        ss[field] = from_si(DEFAULT_INPUT[field],q,ss['unit_system'])
+    ss['loss_percent'] = 15.0
+    ss['custom_section'] = False
+    ss['components_si'] = []
+    ss['editor_base_si'] = None
+    ss['editor_revision'] += 1
+    ss['x_ratio'],ss['y_ratio'] = .5,1.0
+
+
+
+def main():
+    st.set_page_config(page_title='PRE-POST 2.0 | Viga pretensada',layout='wide')
+    initialize()
+    st.title('PRE-POST 2.0 | Viga pretensada')
+    st.caption('ICIV 1042 · Transferencia y servicio · Núcleo modular en Python')
+    st.info('Uso académico. Viga simplemente apoyada, carga uniforme y un tendón equivalente. Pérdida global declarada.')
+    system = st.radio('Sistema de unidades',['SI','USCS'],horizontal=True,key='unit_system',on_change=change_units)
+    st.button('Restablecer valores',on_click=reset_values)
+    c1,c2 = st.columns(2)
+    c1.text_input('Proyecto',value='PRE-POST',key='project',on_change=invalidate)
+    c2.text_input('Autor / equipo',key='author',on_change=invalidate)
+    cols = st.columns(3)
+    for index,(field,label,q) in enumerate(INPUT_FIELDS):
+        with cols[index%3]:
+            st.number_input(f'{label} [{display_unit(system,q).symbol}]',key=field,format='%.8f',on_change=invalidate)
+    cols[2].number_input('Pérdida declarada [%]',key='loss_percent',on_change=invalidate)
+    st.caption('e positivo hacia arriba; un tendón inferior usa e negativo. Carga muerta adicional excluye el peso propio.')
+    st.subheader('Editor de sección')
+    st.checkbox('Usar sección compuesta',key='custom_section',on_change=invalidate)
+    components = []
+    geometry_error = None
+    if st.session_state['custom_section']:
+        st.selectbox('Plantilla',['Rectangular','T','I','Hueca'],key='shape')
+        st.button('Aplicar plantilla (reemplaza componentes)',on_click=apply_template)
+        buttons = st.columns(2)
+        buttons[0].button('Agregar sólido arriba',on_click=add_component,args=('solid',))
+        buttons[1].button('Agregar vacío centrado',on_click=add_component,args=('hole',))
+        if 'template_error' in st.session_state:
+            st.error(st.session_state.pop('template_error'))
+        st.caption('Ancho y alto de plantilla se aplican con el botón. Este también sitúa el tendón al 10 % del alto desde la base. '
+            'Edite filas para agregar o eliminar sólidos (+1) y vacíos (-1). Todos están centrados horizontalmente; '
+            'los sólidos se apilan sin separación y cada vacío pertenece a un sólido.')
+        if st.session_state['editor_base_si'] is None:
+            st.session_state['editor_base_si'] = [p.model_dump() for p in template('Rectangular',DEFAULT_INPUT['width_m'],DEFAULT_INPUT['height_m'])]
+        rows = [{**p,**{k:from_si(p[k],Q.SECTION_LENGTH,system) for k in ('b','h','y')}} for p in st.session_state['editor_base_si']]
+        symbol = display_unit(system,Q.SECTION_LENGTH).symbol
+        edited = st.data_editor(pd.DataFrame(rows,columns=['name','sign','b','h','y']),num_rows='dynamic',hide_index=True,
+            key=f"components_{st.session_state['editor_revision']}",on_change=invalidate,
+            column_config={'name':'Nombre','sign':st.column_config.SelectboxColumn('Signo',options=[1,-1],required=True),
+                **{k:st.column_config.NumberColumn(f'{label} [{symbol}]',format='%.8f',required=True)
+                    for k,label in [('b','Ancho'),('h','Alto'),('y','Y inferior desde base')]}})
+        try:
+            components = [{**p,**{k:to_si(p[k],Q.SECTION_LENGTH,system) for k in ('b','h','y')}} for p in edited.to_dict('records')]
+            st.session_state['components_si'] = components
+        except (ValueError,TypeError) as exc:
+            geometry_error = str(exc)
+    try:
+        if geometry_error:
+            raise ValueError(geometry_error)
+        beam = read_input(system,components)
+        if st.session_state['custom_section'] and not components:
+            raise ValueError('Agregue al menos un componente.')
+        preview = component_properties(beam.components or template('Rectangular',beam.width_m,beam.height_m),beam.unit_weight_n_m3)
+        with st.expander('Vista de la sección, centroide y tendón',expanded=True):
+            st.plotly_chart(section_plot(preview,beam.eccentricity_m,system),use_container_width=True,key='preview')
+    except (ValueError,TypeError,OverflowError,ZeroDivisionError) as exc:
+        beam = None
+        invalidate()
+        st.error(f'Revise las entradas: {exc}')
+    if st.button('Calcular etapas',type='primary',disabled=beam is None):
+        try:
+            st.session_state['result'] = analyze(beam)
+        except (ValueError,OverflowError,ZeroDivisionError) as exc:
+            invalidate()
+            st.error(f'Error en validación o cálculo: {exc}')
+    result = st.session_state.get('result')
+    if result is None:
+        return
+    st.success('Cálculo actualizado. Los resultados siguientes corresponden a las entradas calculadas.')
+    tabs = st.tabs(['Métricas','Gráficos','Explorar tensiones','Memoria de cálculo','Exportar informe'])
+    with tabs[2]:
+        label = st.radio('Etapa a explorar',list(LABELS.values()),horizontal=True,key='explorer_stage')
+        stage = next(k for k,v in LABELS.items() if v == label)
+        xr = st.slider('Posición x/L',0.0,1.0,.5,.005,key='x_ratio')
+        yr = st.slider('Fibra Y/h desde la base',0.0,1.0,1.0,.005,key='y_ratio')
+        x,y = selected_coordinates(result,xr,yr)
+        st.plotly_chart(section_plot(result.section,result.input.eccentricity_m,system,result,stage,x,y),
+            use_container_width=True,key='stress_map')
+        st.caption('Azul: compresión. Rojo: tracción. Escala fija común a ambas etapas y toda la luz. '
+            'El centroide y la línea de tensión cero son distintos. Los colores no representan límites admisibles.')
+        if not fiber_at(result,stage,x,y)['concrete']:
+            st.info('La fibra sobre el eje central está en un vacío o borde: se muestra la prolongación del campo elástico.')
+    report = report_tables(result,system,stage,x,y)
+    with tabs[0]:
+        for name in ('Sección','Transferencia','Servicio'):
+            st.subheader(name)
+            st.dataframe(pd.DataFrame(report['tables'][name]),hide_index=True,use_container_width=True)
+        st.caption('Transferencia y servicio se resumen en el centro de luz. El explorador y la memoria usan la posición elegida.')
+    with tabs[1]:
+        for j,fig in enumerate(beam_plots(result,system)):
+            st.plotly_chart(fig,use_container_width=True,key=f'beam_{j}')
+        st.plotly_chart(profile_plot(result,system,x),use_container_width=True,key='profile')
+    with tabs[2]:
+        st.dataframe(pd.DataFrame(report['tables']['Explorador']),hide_index=True,use_container_width=True)
+    with tabs[3]:
+        st.caption(f'Memoria en SI base (m, N, Pa). Etapa: {label}; x = {x:.6g} m.')
+        st.dataframe(pd.DataFrame(report['components']),hide_index=True,use_container_width=True)
+        st.caption('Componentes: b, h, y, centroid y d en m; area en m²; own y parallel en m⁴. Los vacíos llevan signo negativo.')
+        for j,step in enumerate(report['memory'],1):
+            with st.expander(f"{j}. {step['label']} = {step['value']:.7g} {step['unit']}"):
+                st.code(step['formula'],language=None)
+                st.text(step['substitution'])
+                st.caption(step['reference'])
+    with tabs[4]:
+        st.write('Entradas, propiedades, ambas etapas, fibra elegida y memoria de 19 pasos. Las descargas conservan valores numéricos y unidades.')
+        st.caption('Excel y PDF son instantáneas tabuladas; JSON conserva las entradas en SI. Los gráficos interactivos se consultan en la plataforma.')
+        st.download_button('Descargar Excel',excel_bytes(report),'PRE_POST_2_0.xlsx',
+            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',key='download_excel')
+        st.download_button('Descargar PDF',pdf_bytes(report),'PRE_POST_2_0.pdf','application/pdf',key='download_pdf')
+        st.download_button('Descargar datos JSON',json_bytes(result,report),'PRE_POST_2_0.json','application/json',key='download_json')
+    st.caption(CONVENTIONS)
+
+
+if __name__ == '__main__':
+    main()
