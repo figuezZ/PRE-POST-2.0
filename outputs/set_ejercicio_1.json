@@ -1,0 +1,172 @@
+{
+  "schema_version": "exercise1-1.0",
+  "input_si": {
+    "case_type": "set_ejercicio_1",
+    "width_m": 0.4,
+    "height_m": 0.9,
+    "steel_depth_m": 0.8,
+    "fc_pa": 30000000.0,
+    "service_moment_n_m": 1000000.0,
+    "effective_steel_stress_pa": 1150000000.0,
+    "fpu_pa": 1860000000.0,
+    "fpy_pa": 1700000000.0,
+    "moment_factor": 1.6,
+    "force_rounding_n": 10000.0
+  },
+  "report": {
+    "case_type": "set_ejercicio_1",
+    "input_si": {
+      "case_type": "set_ejercicio_1",
+      "width_m": 0.4,
+      "height_m": 0.9,
+      "steel_depth_m": 0.8,
+      "fc_pa": 30000000.0,
+      "service_moment_n_m": 1000000.0,
+      "effective_steel_stress_pa": 1150000000.0,
+      "fpu_pa": 1860000000.0,
+      "fpy_pa": 1700000000.0,
+      "moment_factor": 1.6,
+      "force_rounding_n": 10000.0
+    },
+    "values": {
+      "area_m2": 0.36000000000000004,
+      "inertia_m4": 0.024300000000000002,
+      "section_modulus_m3": 0.054000000000000006,
+      "eccentricity_m": -0.35000000000000003,
+      "tension_u_pa": 3834057.9025361626,
+      "tension_c_pa": 5477225.575051662,
+      "force_lower_n": 1408459.6378944204,
+      "force_upper_n": 1585921.7465260942,
+      "adopted_force_n": 1410000.0,
+      "steel_area_m2": 0.0012260869565217391,
+      "top_stress_pa": -13296296.296296293,
+      "bottom_stress_pa": 5462962.962962961,
+      "moment_demand_n_m": 1600000.0,
+      "service_class": "T",
+      "fps_pa": 1714449053.7084398,
+      "compression_block_m": 0.20608466886009377,
+      "neutral_axis_m": 0.24245255160011034,
+      "beta1": 0.85,
+      "gamma_p": 0.28,
+      "net_strain": 0.006898844059015908,
+      "nominal_moment_n_m": 1465049.3551285753,
+      "capacity_n_m": 1318544.4196157178,
+      "tensile_force_n": 2102063.6223729565,
+      "lever_arm_m": 0.6969576655699532
+    },
+    "checks": [
+      {
+        "name": "Clase T en fibra inferior",
+        "status": "CUMPLE CRITERIO",
+        "demand": 5462962.962962961,
+        "capacity": 5477225.575051662,
+        "unit": "Pa",
+        "note": "Intervalo estricto 0.7 sqrt(fc) < sigma_inf < sqrt(fc); fuerza adoptada por exceso.",
+        "reference": "SET DE EJERCICIOS PARA AVANCE 2.pdf, ejercicio 1, pp.1-3 (UNaM, Dávalos y Fraticelli)",
+        "function": "solve_exercise1",
+        "normative_status": "PRELIMINAR; referencia de la fuente, no adopción docente confirmada"
+      },
+      {
+        "name": "Flexión: phi Mn frente a 1.6 Ms",
+        "demand": 1600000.0,
+        "capacity": 1318544.4196157178,
+        "unit": "N m",
+        "ratio": 1.2134593087628482,
+        "status": "NO CUMPLE",
+        "reference": "CIRSOC 201-2005 18.7.2(a), 9.3.2.1; método revisado distinto al simplificado de la fuente",
+        "function": "rectangular_flexure",
+        "note": "",
+        "normative_status": "PRELIMINAR: adopción académica pendiente"
+      }
+    ],
+    "source": "SET DE EJERCICIOS PARA AVANCE 2.pdf, ejercicio 1, pp.1-3 (UNaM, Dávalos y Fraticelli)",
+    "source_sha256": "dd620e184eb43082242f6dc8e155ccfab8c35c13846982553f89652b1aff016c",
+    "adoption": "P se redondea por exceso al incremento indicado (10 kN por defecto); es una decisión explícita de la resolución, no dato de la fuente.",
+    "manual_status": "PENDIENTE: la referencia recalculada no es evidencia manuscrita del equipo",
+    "not_applicable": [
+      "Pérdidas: fpe es dato efectivo; no se inventa P0",
+      "Transferencia: falta estado inicial",
+      "Corte y flecha: el ejercicio 1 no da luz ni distribución de cargas"
+    ],
+    "normative_status": "PRELIMINAR: CIRSOC 201-2005; material docente ACI requiere ratificación y unificación",
+    "tables": {
+      "Resultados": [
+        {
+          "Magnitud": "Área",
+          "Valor": 0.36000000000000004,
+          "Unidad": "m²"
+        },
+        {
+          "Magnitud": "Inercia",
+          "Valor": 0.024300000000000002,
+          "Unidad": "m⁴"
+        },
+        {
+          "Magnitud": "Módulo resistente",
+          "Valor": 0.054000000000000006,
+          "Unidad": "m³"
+        },
+        {
+          "Magnitud": "Excentricidad",
+          "Valor": -0.35000000000000003,
+          "Unidad": "m"
+        },
+        {
+          "Magnitud": "Límite inferior abierto P",
+          "Valor": 1408.4596378944204,
+          "Unidad": "kN"
+        },
+        {
+          "Magnitud": "Límite superior abierto P",
+          "Valor": 1585.9217465260942,
+          "Unidad": "kN"
+        },
+        {
+          "Magnitud": "Fuerza efectiva adoptada",
+          "Valor": 1410.0,
+          "Unidad": "kN"
+        },
+        {
+          "Magnitud": "Área activa teórica",
+          "Valor": 1226.0869565217392,
+          "Unidad": "mm²"
+        },
+        {
+          "Magnitud": "Tensión superior",
+          "Valor": -13.296296296296292,
+          "Unidad": "MPa"
+        },
+        {
+          "Magnitud": "Tensión inferior",
+          "Valor": 5.462962962962961,
+          "Unidad": "MPa"
+        },
+        {
+          "Magnitud": "Momento requerido",
+          "Valor": 1600.0,
+          "Unidad": "kN m"
+        },
+        {
+          "Magnitud": "Tensión última acero",
+          "Valor": 1714.4490537084398,
+          "Unidad": "MPa"
+        },
+        {
+          "Magnitud": "Bloque comprimido a",
+          "Valor": 206.08466886009376,
+          "Unidad": "mm"
+        },
+        {
+          "Magnitud": "Momento nominal",
+          "Valor": 1465.0493551285754,
+          "Unidad": "kN m"
+        },
+        {
+          "Magnitud": "Resistencia phi Mn",
+          "Valor": 1318.5444196157177,
+          "Unidad": "kN m"
+        }
+      ]
+    }
+  }
+}
