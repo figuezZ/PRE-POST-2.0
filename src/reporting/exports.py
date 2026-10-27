@@ -22,6 +22,9 @@ def excel_bytes(report) -> bytes:
         meta = [{'Dato': k, 'Valor': report[k]} for k in ('project','author','system','stage','x_m','y_m','concrete','conventions')]
         meta.append({'Dato': 'Fecha UTC', 'Valor': datetime.now(timezone.utc).isoformat()})
         sheets = {'Identificación': meta, **report['tables'], 'Componentes SI': report['components'], 'Memoria SI': report['memory']}
+        if report.get('checks'):
+            sheets['Estados SI'] = report['checks']
+            sheets['Desarrollo nuevo SI'] = report['design_memory']
         for name, rows in sheets.items():
             frame = pd.DataFrame(rows)
             frame.to_excel(writer, sheet_name=name, index=False)
@@ -88,6 +91,12 @@ def pdf_bytes(report) -> bytes:
                 '. En vacíos o bordes se informa la prolongación del campo elástico.'), Spacer(1, 8)]
         story += [table([['Propiedad','Valor','Unidad']]+[[r['Propiedad'], f"{r['Valor']:.8g}",r['Unidad']] for r in rows],
             [287, 145, 87])]
+    if report.get('checks'):
+        story += [PageBreak(),p('Verificaciones preliminares - SI','Heading1')]
+        for c in report['checks']:
+            story += [KeepTogether([p(c['name']+' — '+c['status'],'Heading2'),p(f"Demanda: {c['demand']}; capacidad: {c['capacity']}; unidad: {c['unit']}; razón: {c['ratio']}"),p(c['reference']),p(c['note']),p(c['normative_status'])])]
+        for step in report['design_memory']:
+            story += [KeepTogether([p(step['label'],'Heading2'),p(step['formula']),p(step['substitution']),p(f"Resultado: {step['value']:.9g} {step['unit']}"),p(step['reference'])])]
     story += [PageBreak(), p('Componentes y ejes paralelos', 'Heading1'),
         p('Todas las magnitudes de esta tabla están en SI. Ai y las inercias llevan signo; los vacíos restan.'), Spacer(1, 10),
         table([['Componente','Ai (m2)','Yi (m)','di (m)','I propio (m4)','Ai di2 (m4)']]+

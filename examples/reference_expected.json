@@ -1,0 +1,147 @@
+[
+  {
+    "name": "A histórico",
+    "input": {
+      "span_m": 10.0,
+      "width_m": 0.4,
+      "height_m": 0.8,
+      "unit_weight_n_m3": 25000.0,
+      "fci_pa": 35000000.0,
+      "fc_pa": 45000000.0,
+      "dead_load_n_m": 0.0,
+      "live_load_n_m": 5000.0,
+      "initial_force_n": 1000000.0,
+      "eccentricity_m": -0.2,
+      "steel_area_m2": 0.0007,
+      "loss_ratio": 0.15
+    },
+    "controls": [
+      {
+        "path": "section.area_m2",
+        "expected": 0.32,
+        "source": "Caso analítico Avance 1, informe septiembre p.6",
+        "rtol": 1e-09,
+        "atol": 1e-08
+      },
+      {
+        "path": "section.inertia_m4",
+        "expected": 0.017066666666666667,
+        "source": "Caso analítico Avance 1, informe septiembre p.6",
+        "rtol": 1e-09,
+        "atol": 1e-08
+      },
+      {
+        "path": "section.self_weight_n_m",
+        "expected": 8000,
+        "source": "Caso analítico Avance 1, informe septiembre p.6",
+        "rtol": 1e-09,
+        "atol": 1e-08
+      },
+      {
+        "path": "transfer.stress.top_pa",
+        "expected": -781250,
+        "source": "Caso analítico Avance 1, informe septiembre p.6",
+        "rtol": 1e-09,
+        "atol": 1e-08
+      },
+      {
+        "path": "transfer.stress.bottom_pa",
+        "expected": -5468750,
+        "source": "Caso analítico Avance 1, informe septiembre p.6",
+        "rtol": 1e-09,
+        "atol": 1e-08
+      },
+      {
+        "path": "service.force_n",
+        "expected": 850000,
+        "source": "Caso analítico Avance 1, informe septiembre p.6",
+        "rtol": 1e-09,
+        "atol": 1e-08
+      },
+      {
+        "path": "service.midspan_moment_n_m",
+        "expected": 162500,
+        "source": "Caso analítico Avance 1, informe septiembre p.6",
+        "rtol": 1e-09,
+        "atol": 1e-08
+      },
+      {
+        "path": "service.stress.top_pa",
+        "expected": -2480468.75,
+        "source": "Caso analítico Avance 1, informe septiembre p.6",
+        "rtol": 1e-09,
+        "atol": 1e-08
+      },
+      {
+        "path": "service.stress.bottom_pa",
+        "expected": -2832031.25,
+        "source": "Caso analítico Avance 1, informe septiembre p.6",
+        "rtol": 1e-09,
+        "atol": 1e-08
+      }
+    ]
+  },
+  {
+    "name": "B guía ejercicio 1 adaptado",
+    "input": {
+      "span_m": 15.0,
+      "width_m": 0.4,
+      "height_m": 0.9,
+      "unit_weight_n_m3": 25000.0,
+      "fci_pa": 30000000.0,
+      "fc_pa": 30000000.0,
+      "dead_load_n_m": 0.0,
+      "live_load_n_m": 26555.555555555555,
+      "initial_force_n": 1650588.2352941176,
+      "eccentricity_m": -0.35,
+      "steel_area_m2": 0.00122,
+      "loss_ratio": 0.15,
+      "design": {
+        "loss_method": "declarada",
+        "fpy_pa": 1700000000.0
+      }
+    },
+    "controls": [
+      {
+        "path": "section.area_m2",
+        "expected": 0.36,
+        "source": "Guía UNaM p.1",
+        "rtol": 1e-09,
+        "atol": 1e-08
+      },
+      {
+        "path": "section.section_modulus_bottom_m3",
+        "expected": 0.054,
+        "source": "Guía p.1: corregir unidad m4 a m3",
+        "rtol": 1e-09,
+        "atol": 1e-08
+      },
+      {
+        "path": "service.force_n",
+        "expected": 1403000,
+        "source": "Guía p.2; pérdida 15% solo adaptación de entrada",
+        "rtol": 1e-09,
+        "atol": 1e-08
+      },
+      {
+        "path": "service.midspan_moment_n_m",
+        "expected": 1000000,
+        "source": "Guía p.1; luz 15m adoptada de ej.2",
+        "rtol": 1e-09,
+        "atol": 1e-08
+      },
+      {
+        "path": "service.stress.bottom_pa",
+        "expected": 5527777.777777778,
+        "source": "Revisión independiente de guía p.1-2: 1000000/0.054-1403000*(1/0.36+0.35/0.054)=49750000/9 Pa. Véase docs/auditoria_fuente.md.",
+        "rtol": 1e-09,
+        "atol": 1e-08
+      }
+    ],
+    "published_discrepancy": {
+      "published_pa": 5480000,
+      "recomputed_pa": 5527777.777777778,
+      "reason": "P publicado no satisface límite publicado; se conserva como discrepancia, no como aprobación de la fuente."
+    }
+  }
+]

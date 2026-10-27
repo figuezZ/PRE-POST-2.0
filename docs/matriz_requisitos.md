@@ -19,3 +19,6 @@
 
 La migración de arquitectura no significa que todos los requisitos estructurales
 de la entrega estén resueltos. Esta tabla debe acompañar cualquier presentación.
+
+
+Actualización: esta matriz conserva el estado de septiembre; ver matriz_avance2.md para la extensión del 27-10-2026.

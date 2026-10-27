@@ -1,111 +1,306 @@
 {
-  "version": "2.0.0",
+  "version": "2.1.0-rc1",
   "status": "PASS",
   "comparisons": [
     {
-      "name": "A rectangular",
-      "calculated": 0.32000000000000006,
+      "case": "A histórico",
+      "quantity": "section.area_m2",
+      "obtained": 0.32000000000000006,
       "expected": 0.32,
-      "relative_tolerance": 1e-10,
-      "passed": true
+      "absolute_error": 5.551115123125783e-17,
+      "relative_error": 1.734723475976807e-16,
+      "tolerance": 1e-08,
+      "passed": true,
+      "source": "Caso analítico Avance 1, informe septiembre p.6"
     },
     {
-      "name": "I rectangular",
-      "calculated": 0.01706666666666667,
+      "case": "A histórico",
+      "quantity": "section.inertia_m4",
+      "obtained": 0.01706666666666667,
       "expected": 0.017066666666666667,
-      "relative_tolerance": 1e-10,
-      "passed": true
+      "absolute_error": 3.469446951953614e-18,
+      "relative_error": 2.0328790734103208e-16,
+      "tolerance": 1e-08,
+      "passed": true,
+      "source": "Caso analítico Avance 1, informe septiembre p.6"
     },
     {
-      "name": "Peso propio",
-      "calculated": 8000.000000000002,
+      "case": "A histórico",
+      "quantity": "section.self_weight_n_m",
+      "obtained": 8000.000000000002,
       "expected": 8000,
-      "relative_tolerance": 1e-10,
-      "passed": true
+      "absolute_error": 1.8189894035458565e-12,
+      "relative_error": 2.2737367544323206e-16,
+      "tolerance": 8.000000000000001e-06,
+      "passed": true,
+      "source": "Caso analítico Avance 1, informe septiembre p.6"
     },
     {
-      "name": "Reacción transferencia",
-      "calculated": 40000.00000000001,
-      "expected": 40000,
-      "relative_tolerance": 1e-10,
-      "passed": true
-    },
-    {
-      "name": "Momento transferencia",
-      "calculated": 100000.00000000003,
-      "expected": 100000,
-      "relative_tolerance": 1e-10,
-      "passed": true
-    },
-    {
-      "name": "Superior transferencia",
-      "calculated": -781250.0000000005,
+      "case": "A histórico",
+      "quantity": "transfer.stress.top_pa",
+      "obtained": -781250.0000000005,
       "expected": -781250,
-      "relative_tolerance": 1e-10,
-      "passed": true
+      "absolute_error": 4.656612873077393e-10,
+      "relative_error": 5.960464477539063e-16,
+      "tolerance": 0.00078125,
+      "passed": true,
+      "source": "Caso analítico Avance 1, informe septiembre p.6"
     },
     {
-      "name": "Inferior transferencia",
-      "calculated": -5468749.999999998,
+      "case": "A histórico",
+      "quantity": "transfer.stress.bottom_pa",
+      "obtained": -5468749.999999998,
       "expected": -5468750,
-      "relative_tolerance": 1e-10,
-      "passed": true
+      "absolute_error": 1.862645149230957e-09,
+      "relative_error": 3.405979701450893e-16,
+      "tolerance": 0.0054687500000000005,
+      "passed": true,
+      "source": "Caso analítico Avance 1, informe septiembre p.6"
     },
     {
-      "name": "Pe servicio",
-      "calculated": 850000.0,
+      "case": "A histórico",
+      "quantity": "service.force_n",
+      "obtained": 850000.0,
       "expected": 850000,
-      "relative_tolerance": 1e-10,
-      "passed": true
+      "absolute_error": 0.0,
+      "relative_error": 0.0,
+      "tolerance": 0.0008500000000000001,
+      "passed": true,
+      "source": "Caso analítico Avance 1, informe septiembre p.6"
     },
     {
-      "name": "Carga servicio",
-      "calculated": 13000.000000000002,
-      "expected": 13000,
-      "relative_tolerance": 1e-10,
-      "passed": true
-    },
-    {
-      "name": "Momento servicio",
-      "calculated": 162500.00000000003,
+      "case": "A histórico",
+      "quantity": "service.midspan_moment_n_m",
+      "obtained": 162500.00000000003,
       "expected": 162500,
-      "relative_tolerance": 1e-10,
-      "passed": true
+      "absolute_error": 2.9103830456733704e-11,
+      "relative_error": 1.7910049511836126e-16,
+      "tolerance": 0.00016250000000000002,
+      "passed": true,
+      "source": "Caso analítico Avance 1, informe septiembre p.6"
     },
     {
-      "name": "Superior servicio",
-      "calculated": -2480468.75,
+      "case": "A histórico",
+      "quantity": "service.stress.top_pa",
+      "obtained": -2480468.75,
       "expected": -2480468.75,
-      "relative_tolerance": 1e-10,
-      "passed": true
+      "absolute_error": 0.0,
+      "relative_error": 0.0,
+      "tolerance": 0.00248046875,
+      "passed": true,
+      "source": "Caso analítico Avance 1, informe septiembre p.6"
     },
     {
-      "name": "Inferior servicio",
-      "calculated": -2832031.249999999,
+      "case": "A histórico",
+      "quantity": "service.stress.bottom_pa",
+      "obtained": -2832031.249999999,
       "expected": -2832031.25,
-      "relative_tolerance": 1e-10,
-      "passed": true
+      "absolute_error": 9.313225746154785e-10,
+      "relative_error": 3.288532125538793e-16,
+      "tolerance": 0.0028320312500000003,
+      "passed": true,
+      "source": "Caso analítico Avance 1, informe septiembre p.6"
     },
     {
-      "name": "A sección T",
-      "calculated": 0.14080000000000004,
-      "expected": 0.1408,
-      "relative_tolerance": 1e-10,
-      "passed": true
+      "case": "B guía ejercicio 1 adaptado",
+      "quantity": "section.area_m2",
+      "obtained": 0.36000000000000004,
+      "expected": 0.36,
+      "absolute_error": 5.551115123125783e-17,
+      "relative_error": 1.5419764230904951e-16,
+      "tolerance": 1e-08,
+      "passed": true,
+      "source": "Guía UNaM p.1"
     },
     {
-      "name": "Centroide T",
-      "calculated": 0.5018181818181818,
-      "expected": 0.5018181818181818,
-      "relative_tolerance": 1e-10,
-      "passed": true
+      "case": "B guía ejercicio 1 adaptado",
+      "quantity": "section.section_modulus_bottom_m3",
+      "obtained": 0.054000000000000006,
+      "expected": 0.054,
+      "absolute_error": 6.938893903907228e-18,
+      "relative_error": 1.2849803525754127e-16,
+      "tolerance": 1e-08,
+      "passed": true,
+      "source": "Guía p.1: corregir unidad m4 a m3"
     },
     {
-      "name": "I sección T",
-      "calculated": 0.008343427878787885,
-      "expected": 0.00834342787878788,
-      "relative_tolerance": 1e-10,
-      "passed": true
+      "case": "B guía ejercicio 1 adaptado",
+      "quantity": "service.force_n",
+      "obtained": 1403000.0,
+      "expected": 1403000,
+      "absolute_error": 0.0,
+      "relative_error": 0.0,
+      "tolerance": 0.0014030000000000002,
+      "passed": true,
+      "source": "Guía p.2; pérdida 15% solo adaptación de entrada"
+    },
+    {
+      "case": "B guía ejercicio 1 adaptado",
+      "quantity": "service.midspan_moment_n_m",
+      "obtained": 1000000.0,
+      "expected": 1000000,
+      "absolute_error": 0.0,
+      "relative_error": 0.0,
+      "tolerance": 0.001,
+      "passed": true,
+      "source": "Guía p.1; luz 15m adoptada de ej.2"
+    },
+    {
+      "case": "B guía ejercicio 1 adaptado",
+      "quantity": "service.stress.bottom_pa",
+      "obtained": 5527777.777777778,
+      "expected": 5527777.777777778,
+      "absolute_error": 0.0,
+      "relative_error": 0.0,
+      "tolerance": 0.005527777777777778,
+      "passed": true,
+      "source": "Revisión independiente de guía p.1-2: 1000000/0.054-1403000*(1/0.36+0.35/0.054)=49750000/9 Pa. Véase docs/auditoria_fuente.md."
+    },
+    {
+      "case": "B2 Corte de guía, cálculo local",
+      "quantity": "Vc N",
+      "obtained": 701084.8736066128,
+      "expected": 701084.873606613,
+      "absolute_error": 2.3283064365386963e-10,
+      "relative_error": 3.3210050939497753e-16,
+      "tolerance": 0.01,
+      "passed": true,
+      "source": "Guía p.4: cap 400 sqrt(30)*0.4*0.8 kN; independiente de producción. Publicado 701.10 kN."
     }
-  ]
+  ],
+  "source_discrepancies": [
+    {
+      "published_pa": 5480000,
+      "recomputed_pa": 5527777.777777778,
+      "reason": "P publicado no satisface límite publicado; se conserva como discrepancia, no como aprobación de la fuente."
+    }
+  ],
+  "manual_validation": "PENDIENTE: no hay manuscritos del equipo incorporados",
+  "normative_validation": "PRELIMINAR: no ratificada por docente",
+  "pending": [
+    "Flecha diferida",
+    "Zonas locales y desarrollo",
+    "Sección transformada integrada",
+    "Contribuciones humanas"
+  ],
+  "executed_at_utc": "2026-10-27T04:31:58.938954+00:00",
+  "baseline_commit": "d59181bcd2a3e111d2d0692dd53a2572aad2169e",
+  "tests": {
+    "returncode": 0,
+    "tests": 88,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "legacy": {
+    "version": "2.0.0",
+    "status": "PASS",
+    "comparisons": [
+      {
+        "name": "A rectangular",
+        "calculated": 0.32000000000000006,
+        "expected": 0.32,
+        "relative_tolerance": 1e-10,
+        "passed": true
+      },
+      {
+        "name": "I rectangular",
+        "calculated": 0.01706666666666667,
+        "expected": 0.017066666666666667,
+        "relative_tolerance": 1e-10,
+        "passed": true
+      },
+      {
+        "name": "Peso propio",
+        "calculated": 8000.000000000002,
+        "expected": 8000,
+        "relative_tolerance": 1e-10,
+        "passed": true
+      },
+      {
+        "name": "Reacción transferencia",
+        "calculated": 40000.00000000001,
+        "expected": 40000,
+        "relative_tolerance": 1e-10,
+        "passed": true
+      },
+      {
+        "name": "Momento transferencia",
+        "calculated": 100000.00000000003,
+        "expected": 100000,
+        "relative_tolerance": 1e-10,
+        "passed": true
+      },
+      {
+        "name": "Superior transferencia",
+        "calculated": -781250.0000000005,
+        "expected": -781250,
+        "relative_tolerance": 1e-10,
+        "passed": true
+      },
+      {
+        "name": "Inferior transferencia",
+        "calculated": -5468749.999999998,
+        "expected": -5468750,
+        "relative_tolerance": 1e-10,
+        "passed": true
+      },
+      {
+        "name": "Pe servicio",
+        "calculated": 850000.0,
+        "expected": 850000,
+        "relative_tolerance": 1e-10,
+        "passed": true
+      },
+      {
+        "name": "Carga servicio",
+        "calculated": 13000.000000000002,
+        "expected": 13000,
+        "relative_tolerance": 1e-10,
+        "passed": true
+      },
+      {
+        "name": "Momento servicio",
+        "calculated": 162500.00000000003,
+        "expected": 162500,
+        "relative_tolerance": 1e-10,
+        "passed": true
+      },
+      {
+        "name": "Superior servicio",
+        "calculated": -2480468.75,
+        "expected": -2480468.75,
+        "relative_tolerance": 1e-10,
+        "passed": true
+      },
+      {
+        "name": "Inferior servicio",
+        "calculated": -2832031.249999999,
+        "expected": -2832031.25,
+        "relative_tolerance": 1e-10,
+        "passed": true
+      },
+      {
+        "name": "A sección T",
+        "calculated": 0.14080000000000004,
+        "expected": 0.1408,
+        "relative_tolerance": 1e-10,
+        "passed": true
+      },
+      {
+        "name": "Centroide T",
+        "calculated": 0.5018181818181818,
+        "expected": 0.5018181818181818,
+        "relative_tolerance": 1e-10,
+        "passed": true
+      },
+      {
+        "name": "I sección T",
+        "calculated": 0.008343427878787885,
+        "expected": 0.00834342787878788,
+        "relative_tolerance": 1e-10,
+        "passed": true
+      }
+    ]
+  }
 }

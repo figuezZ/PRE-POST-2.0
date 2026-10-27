@@ -25,6 +25,8 @@ class AnalysisResult:
     section: CompositeProperties
     transfer: Stage
     service: Stage
+    losses: object | None = None
+    engineering: dict | None = None
 
 
 @dataclass(frozen=True)
@@ -76,10 +78,16 @@ def analyze(data: ProjectInput | dict) -> AnalysisResult:
             raise ValueError('Resultados fuera del rango numérico. Revise las unidades.')
         return Stage(force, force/beam.steel_area_m2, load, effects.reaction_n,
             effects.max_shear_n, effects.midspan_moment_n_m, stress)
-    return AnalysisResult(beam, section,
-        stage(beam.initial_force_n, section.self_weight_n_m),
-        stage(effective_force(beam.initial_force_n, beam.loss_ratio),
-              section.self_weight_n_m+beam.dead_load_n_m+beam.live_load_n_m))
+    from dataclasses import replace
+    from src.prestress.losses import calculate_losses
+    from src.checks.engineering import evaluate
+    losses = calculate_losses(beam, section, beam.design) if beam.design else None
+    transfer_force = losses.transfer_force_n if losses else beam.initial_force_n
+    service_force = losses.effective_force_n if losses else effective_force(beam.initial_force_n, beam.loss_ratio)
+    result = AnalysisResult(beam, section,
+        stage(transfer_force, section.self_weight_n_m),
+        stage(service_force, section.self_weight_n_m+beam.dead_load_n_m+beam.live_load_n_m),losses)
+    return replace(result, engineering=evaluate(result,beam.design)) if beam.design else result
 
 
 def stage_at(result: AnalysisResult, stage: Literal['transfer', 'service'], x: float) -> PositionResult:

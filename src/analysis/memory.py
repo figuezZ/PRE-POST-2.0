@@ -33,4 +33,8 @@ def calculation_memory(result, stage, x):
         f = fiber_at(result, stage, x, y)
         steps.append(('Tensión '+label, 'sigma(y) = -P/A - (P e + M)y/I',
             f'y={n(y)} m; -{n(s.force)}/{n(p.area_m2)} - ({n(s.force)} x {n(i.eccentricity_m)} + {n(s.moment)}) x {n(y)}/{n(p.inertia_m4)} = {n(f["axial"])} + {n(f["prestress"])} + {n(f["external"])}', f['stress'], 'Pa'))
+    if result.losses and result.losses.method != 'declarada':
+        loss = result.losses
+        steps[8] = ('Fuerza de etapa', 'Pt=P0-Ap*ES; Pe=Pt-Ap*(SH+CR+RE)',
+            f'P0={i.initial_force_n:.9g} N; Ap={i.steel_area_m2:.9g} m2; ES={loss.elastic_pa:.9g} Pa; SH={loss.shrinkage_pa:.9g} Pa; CR={loss.creep_pa:.9g} Pa; RE={loss.relaxation_pa:.9g} Pa',s.force,'N')
     return [dict(label=a, formula=b, substitution=c, value=d, unit=e, reference=REFERENCE) for a,b,c,d,e in steps]

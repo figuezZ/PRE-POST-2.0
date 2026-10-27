@@ -1,0 +1,32 @@
+[
+  {
+    "case": "caso_criterios_satisfechos",
+    "returncode": 0,
+    "stdout": "Cálculo ejecutado; revisar estados y pendientes: outputs/demo_caso_criterios_satisfechos\nCUMPLE CRITERIO Transferencia compresión\nCUMPLE CRITERIO Transferencia tracción\nCUMPLE CRITERIO Servicio total compresión\nCUMPLE CRITERIO Servicio clase U\nCUMPLE CRITERIO Servicio permanente compresión\nCUMPLE CRITERIO Acero después de transferencia\nPENDIENTE Límite del gato\nCUMPLE CRITERIO Flexión\nCUMPLE CRITERIO Resistencia mínima a flexión\nCUMPLE CRITERIO Corte en sección d\nCUMPLE CRITERIO Estribos requeridos\nCUMPLE CRITERIO Separación de estribos\nCUMPLE CRITERIO Límite de Vs\nCUMPLE CRITERIO Flecha instantánea por carga viva\nPENDIENTE Flecha diferida\nPENDIENTE Extremos y desarrollo\n",
+    "stderr": ""
+  },
+  {
+    "case": "caso_A_ampliado",
+    "returncode": 0,
+    "stdout": "Cálculo ejecutado; revisar estados y pendientes: outputs/demo_caso_A_ampliado\nCUMPLE CRITERIO Transferencia compresión\nCUMPLE CRITERIO Transferencia tracción\nCUMPLE CRITERIO Servicio total compresión\nCUMPLE CRITERIO Servicio clase U\nCUMPLE CRITERIO Servicio permanente compresión\nNO CUMPLE Acero después de transferencia\nPENDIENTE Límite del gato\nCUMPLE CRITERIO Flexión\nCUMPLE CRITERIO Resistencia mínima a flexión\nCUMPLE CRITERIO Corte en sección d\nCUMPLE CRITERIO Estribos requeridos\nCUMPLE CRITERIO Separación de estribos\nCUMPLE CRITERIO Límite de Vs\nCUMPLE CRITERIO Flecha instantánea por carga viva\nPENDIENTE Flecha diferida\nPENDIENTE Extremos y desarrollo\n",
+    "stderr": ""
+  },
+  {
+    "case": "caso_B_externo",
+    "returncode": 0,
+    "stdout": "Cálculo ejecutado; revisar estados y pendientes: outputs/demo_caso_B_externo\nCUMPLE CRITERIO Transferencia compresión\nNO CUMPLE Transferencia tracción\nCUMPLE CRITERIO Servicio total compresión\nNO CUMPLE Servicio clase U\nCUMPLE CRITERIO Servicio permanente compresión\nCUMPLE CRITERIO Acero después de transferencia\nPENDIENTE Límite del gato\nNO CUMPLE Flexión\nCUMPLE CRITERIO Resistencia mínima a flexión\nCUMPLE CRITERIO Corte en sección d\nCUMPLE CRITERIO Estribos requeridos\nCUMPLE CRITERIO Separación de estribos\nCUMPLE CRITERIO Límite de Vs\nPENDIENTE Flecha de servicio\nPENDIENTE Flecha diferida\nPENDIENTE Extremos y desarrollo\n",
+    "stderr": ""
+  },
+  {
+    "case": "caso_no_cumple",
+    "returncode": 0,
+    "stdout": "Cálculo ejecutado; revisar estados y pendientes: outputs/demo_caso_no_cumple\nCUMPLE CRITERIO Transferencia compresión\nCUMPLE CRITERIO Transferencia tracción\nNO CUMPLE Servicio total compresión\nNO CUMPLE Servicio clase U\nCUMPLE CRITERIO Servicio permanente compresión\nNO CUMPLE Acero después de transferencia\nPENDIENTE Límite del gato\nNO CUMPLE Flexión\nCUMPLE CRITERIO Resistencia mínima a flexión\nNO CUMPLE Corte en sección d\nNO CUMPLE Estribos requeridos\nCUMPLE CRITERIO Separación de estribos\nCUMPLE CRITERIO Límite de Vs\nPENDIENTE Flecha de servicio\nPENDIENTE Flecha diferida\nPENDIENTE Extremos y desarrollo\n",
+    "stderr": ""
+  },
+  {
+    "case": "caso_invalido",
+    "returncode": 2,
+    "stdout": "",
+    "stderr": "ENTRADA RECHAZADA: 1 validation error for ProjectInput\nheight_m\n  Input should be greater than 0 [type=greater_than, input_value=-0.8, input_type=float]\n    For further information visit https://errors.pydantic.dev/2.14/v/greater_than\n"
+  }
+]

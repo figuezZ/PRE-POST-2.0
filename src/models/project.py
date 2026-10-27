@@ -5,6 +5,7 @@ El BeamInput solicitado se conserva literalmente en inputs.py.
 from typing import Literal
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 from src.models.inputs import BeamInput
+from src.models.design import DesignOptions
 
 
 class Component(BaseModel):
@@ -20,6 +21,7 @@ class ProjectInput(BeamInput):
     model_config = ConfigDict(allow_inf_nan=False, extra='forbid', frozen=True)
     project: str = Field(default='PRE-POST', max_length=160)
     author: str = Field(default='', max_length=160)
+    design: DesignOptions | None = None
     components: tuple[Component, ...] = Field(default=(), max_length=24)
 
     @model_validator(mode='after')

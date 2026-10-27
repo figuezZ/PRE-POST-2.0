@@ -27,6 +27,8 @@ def report_tables(result, system='SI', stage='service', x=None, y=None):
                 'Unidad': display_unit(system, quantity).symbol}
     inputs = [row(label, getattr(result.input, field), q) for field, label, q in INPUT_FIELDS]
     inputs.append({'Propiedad': 'Pérdida declarada', 'Valor': result.input.loss_ratio*100, 'Unidad': '%'})
+    if result.losses and result.losses.method != 'declarada':
+        inputs[-1] = {'Propiedad':'Pérdida calculada (r ingresado ignorado)', 'Valor':result.losses.total_ratio*100,'Unidad':'%'}
     sec = result.section
     section = [row(label, getattr(sec, field), q) for field, label, q in [
         ('gross_area_m2', 'Área bruta (antes de vacíos)', Q.SECTION_AREA),
@@ -54,6 +56,9 @@ def report_tables(result, system='SI', stage='service', x=None, y=None):
         ('Tensión superior en x', pos.stress.top_pa, Q.STRESS), ('Tensión inferior en x', pos.stress.bottom_pa, Q.STRESS),
         ('Tensión en fibra', fiber['stress'], Q.STRESS), ('Aporte axial', fiber['axial'], Q.STRESS),
         ('Aporte del pretensado', fiber['prestress'], Q.STRESS), ('Aporte del momento externo', fiber['external'], Q.STRESS)]]
-    return dict(system=system, project=result.input.project, author=result.input.author,
+    report = dict(system=system, project=result.input.project, author=result.input.author,
         stage=stage, x_m=x, y_m=y, concrete=fiber['concrete'], tables=tables,
         components=[asdict(r) for r in sec.rows], memory=calculation_memory(result, stage, x), conventions=CONVENTIONS)
+
+    from src.reporting.design import extend_report
+    return extend_report(report,result,system)

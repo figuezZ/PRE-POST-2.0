@@ -1,0 +1,18 @@
+{
+  "span_m": 15.0,
+  "width_m": 0.4,
+  "height_m": 0.9,
+  "unit_weight_n_m3": 25000.0,
+  "fci_pa": 30000000.0,
+  "fc_pa": 30000000.0,
+  "dead_load_n_m": 0.0,
+  "live_load_n_m": 26555.555555555555,
+  "initial_force_n": 1650588.2352941176,
+  "eccentricity_m": -0.35,
+  "steel_area_m2": 0.00122,
+  "loss_ratio": 0.15,
+  "design": {
+    "loss_method": "declarada",
+    "fpy_pa": 1700000000.0
+  }
+}

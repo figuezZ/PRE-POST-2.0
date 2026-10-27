@@ -19,7 +19,7 @@ def test_rectangular_flow_units_preserved_and_stale_results():
     at = AppTest.from_file(str(APP),default_timeout=30).run()
     assert not at.exception
     click_calculate(at)
-    assert len(at.tabs) == 5
+    assert len(at.tabs) == 2
     assert len(at.get('download_button')) == 3
     before = at.session_state['result']
     at.radio(key='unit_system').set_value('USCS').run()

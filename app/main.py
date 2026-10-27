@@ -9,6 +9,7 @@ if str(ROOT) not in sys.path:
 import pandas as pd
 import streamlit as st
 from src.models.project import ProjectInput, DEFAULT_INPUT
+from src.models.design import DesignOptions
 from src.sections.composite import template, component_properties, tendon_eccentricity, append_component
 from src.analysis.pipeline import analyze, selected_coordinates, fiber_at
 from src.reporting.tables import INPUT_FIELDS, CONVENTIONS, report_tables
@@ -63,7 +64,8 @@ def apply_template():
 def read_input(system, components):
     data = {field:to_si(st.session_state[field],q,system) for field,_,q in INPUT_FIELDS}
     return ProjectInput(**data,loss_ratio=st.session_state['loss_percent']/100,
-        project=st.session_state['project'],author=st.session_state['author'],components=components)
+        project=st.session_state['project'],author=st.session_state['author'],components=components,
+        design=st.session_state.get('design_options') if st.session_state.get('design_enabled') else None)
 
 
 def add_component(kind):
@@ -85,6 +87,7 @@ def reset_values():
         ss[field] = from_si(DEFAULT_INPUT[field],q,ss['unit_system'])
     ss['loss_percent'] = 15.0
     ss['custom_section'] = False
+    ss['design_enabled'] = False
     ss['components_si'] = []
     ss['editor_base_si'] = None
     ss['editor_revision'] += 1
@@ -97,19 +100,38 @@ def main():
     initialize()
     st.title('PRE-POST 2.0 | Viga pretensada')
     st.caption('ICIV 1042 · Transferencia y servicio · Núcleo modular en Python')
-    st.info('Uso académico. Viga simplemente apoyada, carga uniforme y un tendón equivalente. Pérdida global declarada.')
+    st.info('Uso académico. Viga simplemente apoyada, carga uniforme y un tendón equivalente. Modo histórico o extensión preliminar de pérdidas y verificaciones.')
     system = st.radio('Sistema de unidades',['SI','USCS'],horizontal=True,key='unit_system',on_change=change_units)
     st.button('Restablecer valores',on_click=reset_values)
     c1,c2 = st.columns(2)
     c1.text_input('Proyecto',value='PRE-POST',key='project',on_change=invalidate)
     c2.text_input('Autor / equipo',key='author',on_change=invalidate)
+    st.subheader('1. Ingreso de datos')
     cols = st.columns(3)
     for index,(field,label,q) in enumerate(INPUT_FIELDS):
         with cols[index%3]:
             st.number_input(f'{label} [{display_unit(system,q).symbol}]',key=field,format='%.8f',on_change=invalidate)
     cols[2].number_input('Pérdida declarada [%]',key='loss_percent',on_change=invalidate)
     st.caption('e positivo hacia arriba; un tendón inferior usa e negativo. Carga muerta adicional excluye el peso propio.')
-    st.subheader('Editor de sección')
+    st.checkbox('Activar pérdidas y verificaciones del Avance 2',key='design_enabled',on_change=invalidate)
+    if st.session_state['design_enabled']:
+        with st.expander('Materiales y criterios del Avance 2 — entradas SI explícitas',expanded=True):
+            st.warning('PRELIMINAR. Solo pretesado recto adherente rectangular. CIRSOC 201-2005 como referencia; adopción USS pendiente. Flecha diferida y extremos sin verificar.')
+            method = st.selectbox('Método de pérdidas',['fhwa_2003','declarada'],key='new_loss_method',on_change=invalidate)
+            defaults=DesignOptions().model_dump()
+            fields=[('ep_pa','Ep [Pa]'),('eci_pa','Eci [Pa]'),('ec_pa','Ec [Pa]'),
+                ('humidity_percent','Humedad relativa [%]'),('fpu_pa','fpu [Pa]'),('fpy_pa','fpy [Pa]'),
+                ('stirrup_fy_pa','fy estribos [Pa]'),('stirrup_diameter_m','Diámetro estribo [m]'),
+                ('stirrup_spacing_m','Separación estribos [m]'),('strand_diameter_m','Diámetro cordón [m]'),
+                ('live_deflection_divisor','Divisor límite flecha viva L/n')]
+            options={'loss_method':method}
+            newcols=st.columns(2)
+            for j,(field,label) in enumerate(fields):
+                options[field]=newcols[j%2].number_input(label,value=float(defaults[field]),key='design_'+field,on_change=invalidate,format='%.6g')
+            options['stirrup_legs']=st.number_input('Ramas de estribos',value=2,min_value=2,max_value=8,key='design_legs',on_change=invalidate)
+            st.session_state['design_options']=options
+            st.caption('El modo FHWA usa P0 antes de transferencia y descarta el porcentaje global. Baja relajación; método histórico de estimación. Los valores precargados son supuestos ilustrativos, no datos confirmados del equipo.')
+    st.subheader('Editor de sección (opcional)')
     st.checkbox('Usar sección compuesta',key='custom_section',on_change=invalidate)
     components = []
     geometry_error = None
@@ -151,6 +173,7 @@ def main():
         beam = None
         invalidate()
         st.error(f'Revise las entradas: {exc}')
+    st.subheader('2. Cálculo')
     if st.button('Calcular etapas',type='primary',disabled=beam is None):
         try:
             st.session_state['result'] = analyze(beam)
@@ -161,7 +184,16 @@ def main():
     if result is None:
         return
     st.success('Cálculo actualizado. Los resultados siguientes corresponden a las entradas calculadas.')
-    tabs = st.tabs(['Métricas','Gráficos','Explorar tensiones','Memoria de cálculo','Exportar informe'])
+    panels = st.tabs(['3. Resultados','4. Validación y reportes'])
+    with panels[0]:
+        tabs = [st.container(),st.expander('Diagramas esenciales'),st.expander('Explorar tensiones')]
+    with panels[1]:
+        tabs += [st.expander('Desarrollo del cálculo'),st.container()]
+    if result.engineering:
+        with panels[0]:
+            st.warning(result.engineering['warning'])
+            st.dataframe(pd.DataFrame(result.engineering['checks'])[['name','demand','capacity','unit','ratio','status']],hide_index=True)
+            st.caption('Estados parciales; CUMPLE CRITERIO no significa cumplimiento global. Validación manual del grupo pendiente.')
     with tabs[2]:
         label = st.radio('Etapa a explorar',list(LABELS.values()),horizontal=True,key='explorer_stage')
         stage = next(k for k,v in LABELS.items() if v == label)
@@ -176,7 +208,8 @@ def main():
             st.info('La fibra sobre el eje central está en un vacío o borde: se muestra la prolongación del campo elástico.')
     report = report_tables(result,system,stage,x,y)
     with tabs[0]:
-        for name in ('Sección','Transferencia','Servicio'):
+        for name in ('Sección','Transferencia','Servicio','Pérdidas','Verificaciones numéricas','Sección auxiliar'):
+            if name not in report['tables']: continue
             st.subheader(name)
             st.dataframe(pd.DataFrame(report['tables'][name]),hide_index=True,use_container_width=True)
         st.caption('Transferencia y servicio se resumen en el centro de luz. El explorador y la memoria usan la posición elegida.')
@@ -190,12 +223,17 @@ def main():
         st.caption(f'Memoria en SI base (m, N, Pa). Etapa: {label}; x = {x:.6g} m.')
         st.dataframe(pd.DataFrame(report['components']),hide_index=True,use_container_width=True)
         st.caption('Componentes: b, h, y, centroid y d en m; area en m²; own y parallel en m⁴. Los vacíos llevan signo negativo.')
-        for j,step in enumerate(report['memory'],1):
+        for j,step in enumerate(report['memory']+report.get('design_memory',[]),1):
             with st.expander(f"{j}. {step['label']} = {step['value']:.7g} {step['unit']}"):
                 st.code(step['formula'],language=None)
                 st.text(step['substitution'])
                 st.caption(step['reference'])
     with tabs[4]:
+        if st.button('Ejecutar casos de referencia',key='run_references'):
+            from src.validation_avance2 import run_references
+            summary=run_references()
+            st.json(summary)
+        st.caption('Respaldo con papel y lápiz pendiente. Consulte docs/fichas_manuales.md y la matriz de cobertura.')
         st.write('Entradas, propiedades, ambas etapas, fibra elegida y memoria de 19 pasos. Las descargas conservan valores numéricos y unidades.')
         st.caption('Excel y PDF son instantáneas tabuladas; JSON conserva las entradas en SI. Los gráficos interactivos se consultan en la plataforma.')
         st.download_button('Descargar Excel',excel_bytes(report),'PRE_POST_2_0.xlsx',

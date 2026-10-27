@@ -1,3 +1,11 @@
+# Alcance vigente — Avance 2
+
+La extensión opcional implementa pérdidas por mecanismo, comprobaciones preliminares y propiedades auxiliares neta/transformada para rectángulo pretesado recto. El modo histórico sigue disponible. Consulte [método y restricciones](metodo_avance2.md), [matriz vigente](matriz_avance2.md) y [cobertura manual](cobertura_manual.md).
+
+Estado: validación numérica ejecutada; manuscritos, contribuciones personales y ratificación del criterio normativo pendientes. Servicio es parcial: solo flecha instantánea no fisurada.
+
+## Antecedente histórico al commit d59181b (no describe la extensión nueva)
+
 # Alcance de PRE-POST 2.0
 
 El alcance base de `CLAUDE.md` es una viga simplemente apoyada rectangular.
