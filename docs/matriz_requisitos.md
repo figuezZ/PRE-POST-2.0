@@ -1,21 +1,15 @@
-# Matriz de trazabilidad del Avance 1
+# Evidencia del alcance vigente
 
-| Requisito | Módulo / evidencia | Estado |
+Esta tabla describe el software actual; no sustituye la pauta completa del profesor.
+
+| Operación | Evidencia | Estado |
 |---|---|---|
-| Arquitectura modular; interfaz sin ecuaciones | `src/`, `app/`, prueba de dependencias | Hecho |
-| Datos tipados y validación física | `models/`, pruebas de entradas inválidas | Hecho |
-| Área bruta | `sections/`, rectángulo y sólidos antes de vacíos | Hecho |
-| Inercia bruta | `sections/`, integrales y ejes paralelos | Hecho |
-| Propiedades de hormigón / sección neta | Descuento de vacíos dibujados; acero no descontado automáticamente | Parcial |
-| Sección transformada incorporando acero | Falta Es/Ec y contribución geométrica del acero | Pendiente |
-| Peso propio | `sections/`, caso analítico | Hecho |
-| Momento por peso propio | `analysis/`, equilibrio de viga simplemente apoyada | Hecho |
-| Tensiones en distintas fibras | `analysis/pipeline.py`, pruebas de equilibrio y migración JS | Hecho para modelo elástico no fisurado |
-| Secciones de proveedores locales | Plantillas geométricas, sin catálogo identificado | Pendiente |
-| Entradas y resultados organizados | Streamlit, tablas, editor, explorador y gráficos | Hecho |
-| Memoria reproducible y exportación | `analysis/memory.py`, `reporting/`, pruebas de archivos | Hecho |
-| Pruebas y autovalidación | `tests/`, `src/validation.py`, GitHub Actions | Implementado |
-| Pérdidas detalladas, resistencia y norma | Solo porcentaje global declarado; sin límites ACI | Pendiente |
-
-La migración de arquitectura no significa que todos los requisitos estructurales
-de la entrega estén resueltos. Esta tabla debe acompañar cualquier presentación.
+| Validar datos del ejercicio 1 | models/exercise1.py | Implementado |
+| Propiedades y tensiones | exercises/exercise1.py, analysis/elastic.py | Implementado |
+| Fuerza efectiva y área activa | exercises/exercise1.py | Implementado |
+| Resistencia a flexión | checks/engineering.py | Implementado; criterio preliminar |
+| Comparación manuscrita | app/exercise1.py | Disponible; falta cálculo humano |
+| Memoria automática PDF/JSON | reporting/, outputs/set_ejercicio_1.pdf | Generada por el programa |
+| Desarrollo manual de referencia | docs/latex/ | Disponible; no acredita autoría |
+| Pérdidas, transferencia, corte y flechas | Sin datos en este ejercicio | Fuera del alcance actual |
+| Norma docente, aportes individuales e informe final | Trabajo del equipo | Pendiente |

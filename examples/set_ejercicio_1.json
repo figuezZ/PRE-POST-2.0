@@ -1,0 +1,13 @@
+{
+  "case_type": "set_ejercicio_1",
+  "width_m": 0.4,
+  "height_m": 0.9,
+  "steel_depth_m": 0.8,
+  "fc_pa": 30000000.0,
+  "service_moment_n_m": 1000000.0,
+  "effective_steel_stress_pa": 1150000000.0,
+  "fpu_pa": 1860000000.0,
+  "fpy_pa": 1700000000.0,
+  "moment_factor": 1.6,
+  "force_rounding_n": 10000
+}

@@ -1,111 +1,39 @@
 {
-  "version": "2.0.0",
+  "case": "Ejercicio 1 del set",
+  "executed_at_utc": "2026-10-27T18:39:38.870519+00:00",
   "status": "PASS",
-  "comparisons": [
+  "tests": {
+    "returncode": 0,
+    "tests": 8,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "checks": [
     {
-      "name": "A rectangular",
-      "calculated": 0.32000000000000006,
-      "expected": 0.32,
-      "relative_tolerance": 1e-10,
-      "passed": true
+      "name": "Clase T en fibra inferior",
+      "status": "CUMPLE CRITERIO",
+      "demand": 5462962.962962961,
+      "capacity": 5477225.575051662,
+      "unit": "Pa",
+      "note": "Intervalo estricto 0.7 sqrt(fc) < sigma_inf < sqrt(fc); fuerza adoptada por exceso.",
+      "reference": "SET DE EJERCICIOS PARA AVANCE 2.pdf, ejercicio 1, pp.1-3 (UNaM, Dávalos y Fraticelli)",
+      "function": "solve_exercise1",
+      "normative_status": "PRELIMINAR; referencia de la fuente, no adopción docente confirmada"
     },
     {
-      "name": "I rectangular",
-      "calculated": 0.01706666666666667,
-      "expected": 0.017066666666666667,
-      "relative_tolerance": 1e-10,
-      "passed": true
-    },
-    {
-      "name": "Peso propio",
-      "calculated": 8000.000000000002,
-      "expected": 8000,
-      "relative_tolerance": 1e-10,
-      "passed": true
-    },
-    {
-      "name": "Reacción transferencia",
-      "calculated": 40000.00000000001,
-      "expected": 40000,
-      "relative_tolerance": 1e-10,
-      "passed": true
-    },
-    {
-      "name": "Momento transferencia",
-      "calculated": 100000.00000000003,
-      "expected": 100000,
-      "relative_tolerance": 1e-10,
-      "passed": true
-    },
-    {
-      "name": "Superior transferencia",
-      "calculated": -781250.0000000005,
-      "expected": -781250,
-      "relative_tolerance": 1e-10,
-      "passed": true
-    },
-    {
-      "name": "Inferior transferencia",
-      "calculated": -5468749.999999998,
-      "expected": -5468750,
-      "relative_tolerance": 1e-10,
-      "passed": true
-    },
-    {
-      "name": "Pe servicio",
-      "calculated": 850000.0,
-      "expected": 850000,
-      "relative_tolerance": 1e-10,
-      "passed": true
-    },
-    {
-      "name": "Carga servicio",
-      "calculated": 13000.000000000002,
-      "expected": 13000,
-      "relative_tolerance": 1e-10,
-      "passed": true
-    },
-    {
-      "name": "Momento servicio",
-      "calculated": 162500.00000000003,
-      "expected": 162500,
-      "relative_tolerance": 1e-10,
-      "passed": true
-    },
-    {
-      "name": "Superior servicio",
-      "calculated": -2480468.75,
-      "expected": -2480468.75,
-      "relative_tolerance": 1e-10,
-      "passed": true
-    },
-    {
-      "name": "Inferior servicio",
-      "calculated": -2832031.249999999,
-      "expected": -2832031.25,
-      "relative_tolerance": 1e-10,
-      "passed": true
-    },
-    {
-      "name": "A sección T",
-      "calculated": 0.14080000000000004,
-      "expected": 0.1408,
-      "relative_tolerance": 1e-10,
-      "passed": true
-    },
-    {
-      "name": "Centroide T",
-      "calculated": 0.5018181818181818,
-      "expected": 0.5018181818181818,
-      "relative_tolerance": 1e-10,
-      "passed": true
-    },
-    {
-      "name": "I sección T",
-      "calculated": 0.008343427878787885,
-      "expected": 0.00834342787878788,
-      "relative_tolerance": 1e-10,
-      "passed": true
+      "name": "Flexión: phi Mn frente a 1.6 Ms",
+      "demand": 1600000.0,
+      "capacity": 1318544.4196157178,
+      "unit": "N m",
+      "ratio": 1.2134593087628482,
+      "status": "NO CUMPLE",
+      "reference": "CIRSOC 201-2005 18.7.2(a), 9.3.2.1; método revisado distinto al simplificado de la fuente",
+      "function": "rectangular_flexure",
+      "note": "",
+      "normative_status": "PRELIMINAR: adopción académica pendiente"
     }
-  ]
+  ],
+  "manual_validation": "PENDIENTE de manuscrito y revisión humana",
+  "note": "PASS se refiere a las pruebas del software, no al cumplimiento resistente."
 }

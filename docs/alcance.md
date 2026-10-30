@@ -1,37 +1,9 @@
-# Alcance de PRE-POST 2.0
+# Alcance vigente: únicamente ejercicio 1
 
-El alcance base de `CLAUDE.md` es una viga simplemente apoyada rectangular.
-El taller opcional conserva las secciones compuestas de la versión HTML anterior.
-Ambos usan el mismo flujo Python y se presentan en una sola interfaz.
+Sección rectangular con tendón inferior equivalente. Entradas: geometría, resistencia del hormigón, momento de servicio y propiedades del acero. Núcleo en m, N y Pa; compresión negativa, excentricidad positiva hacia arriba.
 
-- Viga prismática, estática lineal, carga uniforme, un tendón recto equivalente.
-- Transferencia: Pi y peso propio. Servicio: Pe y peso propio + muerta adicional + viva.
-- Pe = (1 - pérdida declarada) Pi. No se estiman mecanismos de pérdida.
-- Hormigón elástico no fisurado. Compresión negativa y tracción positiva.
-- Núcleo SI. Presentación SI/USCS. Memoria y componentes siempre en SI base.
-- No se han implementado límites normativos ni se declara cumplimiento de ACI.
+Incluye validación, A/I/W/e, intervalo de fuerza efectiva para clase T, adopción de P por exceso, Ap teórica, tensiones elásticas y resistencia seccional aproximada. Exporta resultados PDF/JSON y permite comparar valores manuscritos.
 
-## Geometría del taller
+No incluye análisis de viga completa, pérdidas, transferencia, corte, flechas, taller de secciones, selección comercial de torones ni postensado. Estos alcances no deben declararse implementados en el informe vigente.
 
-Entre 1 y 24 componentes rectangulares centrados en un eje vertical. Los sólidos
-se apilan desde Y=0, sin superposición ni separación. Los vacíos restan área e
-inercia, quedan dentro de un sólido y deben ser más estrechos. No pueden
-superponerse ni formar una abertura continua que separe la sección en dos piezas.
-Un vacío puede llegar al borde superior/inferior como rebaje dentro de ese sólido.
-
-Se calcula la geometría bruta antes de vacíos y la del hormigón descontando los
-vacíos. No se descuenta automáticamente el área del acero. No hay polígonos
-libres, excentricidad horizontal ni flexión biaxial. El tendón es un punto
-equivalente, sin verificación de recubrimiento o distribución de armaduras.
-
-La línea de tensión cero no es el centroide cuando existe fuerza axial. Si la
-fibra seleccionada sobre el eje central cae en un vacío o borde, se identifica
-como prolongación del campo elástico y no como tensión en un punto de hormigón.
-
-## Pendiente para ampliar la entrega
-
-Sección neta que contemple explícitamente desplazamiento por acero/ductos según
-el procedimiento del curso; sección transformada con Es/Ec; selección de perfiles
-de proveedores; pérdidas por mecanismo; límites normativos; fisuración, flechas,
-resistencia y anclajes. Se debe acordar el procedimiento y la edición normativa
-antes de incorporar estas verificaciones.
+Criterio resistente preliminar: CIRSOC 201-2005. La norma académica debe ratificarse. Se mantienen sin modificación inputs.py, rectangular.py y elastic.py como base literal trazable; conservar esas funciones auxiliares no habilita otros casos en la aplicación.
